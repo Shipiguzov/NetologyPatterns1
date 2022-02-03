@@ -2,18 +2,25 @@ package ru.netology;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selectors;
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.netology.classes.FormData;
+import ru.netology.pageObjects.CardReceive;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Date;
+import java.util.Locale;
 
 import static com.codeborne.selenide.Selenide.*;
 
 public class SelenidTests {
+
     static long BETWEEN_DAYS = 86_400_000;
+    private Faker faker;
 
     @BeforeAll
     static void setupAll() {
@@ -25,6 +32,7 @@ public class SelenidTests {
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--no-sandbox");
         options.addArguments("--headless");*/
+        faker = new Faker(new Locale("ru"));
         open("http://localhost:9999/");
     }
 
@@ -37,13 +45,14 @@ public class SelenidTests {
     //All data enters like text
     @Test
     void correctTest() {
-        $(Selectors.byAttribute("type", "text")).setValue("Москва");
-        LocalDate date = LocalDate.now().plusDays(5);
-        $("[class='input__control'][type='tel']").setValue(date.toString());
-        $("[name=\"name\"]").setValue("Иван Петров");
-        $("[name=\"phone\"]").setValue("+91234567890");
-        $(Selectors.byClassName("checkbox__box")).click();
-        $(Selectors.byText("Забронировать")).click();
+        FormData data = new FormData(
+                faker.address().city(),
+                LocalDate.now().plusDays(5),
+                faker.name().fullName(),
+                faker.phoneNumber().phoneNumber(),
+                true);
+        CardReceive.fillCardForm(data);
+        $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
     }
 
@@ -74,6 +83,22 @@ public class SelenidTests {
         $("[name=\"phone\"]").setValue("+91234567890");
         $(Selectors.byClassName("checkbox__box")).click();
         $(Selectors.byText("Забронировать")).click();
+        $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
+    }
+
+    //Test with replace delivery
+    @Test
+    void testWithSameDate(){
+        FormData data = new FormData(
+                faker.address().city(),
+                LocalDate.now().plusDays(5),
+                faker.name().fullName(),
+                faker.phoneNumber().phoneNumber(),
+                true);
+        CardReceive.fillCardForm(data);
+        //TODO
+        long date = new Date().getTime();
+        System.out.println(date);
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
     }
 
