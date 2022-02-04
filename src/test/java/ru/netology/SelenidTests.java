@@ -12,7 +12,6 @@ import ru.netology.pageObjects.CardReceive;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Locale;
 
 import static com.codeborne.selenide.Selenide.*;
@@ -59,97 +58,124 @@ public class SelenidTests {
     //City selects by click after enter first letter
     @Test
     void correctTestCitySelectsByClick() {
-//        $(Selectors.byAttribute("type", "text")).setValue("Москва");
-        $(Selectors.byAttribute("type", "text")).setValue("Мо");
-        $(Selectors.byText("Москва")).click();
-        $("[class='input__control'][type='tel']").setValue("02.02.2022");
-        $("[name=\"name\"]").setValue("Иван Петров");
-        $("[name=\"phone\"]").setValue("+71234567890");
-        $(Selectors.byClassName("checkbox__box")).click();
-        $(Selectors.byText("Забронировать")).click();
+        FormData data = new FormData(
+                "",
+                LocalDate.now().plusDays(5),
+                faker.name().fullName(),
+                faker.phoneNumber().phoneNumber(),
+                true);
+        CardReceive.fillCardForm(data);
+        data.setCity(faker.address().city());
+        CardReceive.selectCityFromList(data.getCity().substring(0,3), data.getCity());
+        $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
     }
 
     //Data selects from calendar
     @Test
     void dateFromCalendar() {
-        $(Selectors.byAttribute("type", "text")).setValue("Москва");
-        $(Selectors.byClassName("input_type_tel")).click();
-        String data = $(Selectors.byClassName("calendar__day_state_current"))
-                .getAttribute("data-day");
-        long newDate = Long.valueOf(data) + BETWEEN_DAYS;
-        $(Selectors.byAttribute("data-day", String.valueOf(newDate))).click();
-        $("[name=\"name\"]").setValue("Иван Петров");
-        $("[name=\"phone\"]").setValue("+91234567890");
-        $(Selectors.byClassName("checkbox__box")).click();
-        $(Selectors.byText("Забронировать")).click();
+        FormData data = new FormData(
+                faker.address().city(),
+                LocalDate.now().plusDays(7),
+                faker.name().fullName(),
+                faker.phoneNumber().phoneNumber(),
+                true);
+        CardReceive.fillCardForm(data);
+        CardReceive.selectDayFromCalendar(7);
+        $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
     }
 
     //Test with replace delivery
     @Test
-    void testWithSameDate(){
+    void testWithSameDate() {
         FormData data = new FormData(
                 faker.address().city(),
+                LocalDate.now().plusDays(7),
+                faker.name().fullName(),
+                faker.phoneNumber().phoneNumber(),
+                true);
+        CardReceive.fillCardForm(data);
+        $(Selectors.byText("Запланировать")).click();
+        CardReceive.selectDayFromCalendar(5);
+        $(Selectors.byText("Запланировать")).click();
+        $(Selectors.byText("Перепланировать")).click();
+        $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
+    }
+
+    //Negative tests
+    //City name in English
+    @Test
+    void incorrectCity() {
+        Faker fakerEnglish = new Faker(new Locale("en"));
+        FormData data = new FormData(
+                fakerEnglish.address().city(),
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
                 faker.phoneNumber().phoneNumber(),
                 true);
         CardReceive.fillCardForm(data);
-        //TODO
-        long date = new Date().getTime();
-        System.out.println(date);
-        $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
-    }
-
-    //Negative tests
-
-    //City name in English
-    @Test
-    void incorrectCity() {
-        $(Selectors.byAttribute("type", "text")).setValue("Mos");
-        $("[class='input__control'][type='tel']").setValue("02.02.2022");
-        $("[name=\"name\"]").setValue("Иван Петров");
-        $("[name=\"phone\"]").setValue("+71234567890");
-        $(Selectors.byClassName("checkbox__box")).click();
-        $(Selectors.byText("Забронировать")).click();
-        $(Selectors.withText("Доставка в выбранный город недоступна")).should(Condition.appear, Duration.ofSeconds(5));
+        $(Selectors.byText("Запланировать")).click();
+        $(Selectors.byText("Доставка в выбранный город недоступна"))
+                .should(Condition.appear, Duration.ofSeconds(15));
     }
 
     //Entered wrong data
     @Test
     void wrongDate() {
-        $(Selectors.byAttribute("type", "text")).setValue("Москва");
-        LocalDate date = LocalDate.now();
-        $("[class='input__control'][type='tel']").setValue(date.toString());
-        $("[name=\"name\"]").setValue("Иван Петров");
-        $("[name=\"phone\"]").setValue("+71234567890");
-        $(Selectors.byClassName("checkbox__box")).click();
-        $(Selectors.byText("Забронировать")).click();
-        $(Selectors.withText("Заказ на выбранную дату невозможен")).should(Condition.appear, Duration.ofSeconds(15));
+        FormData data = new FormData(
+                faker.address().city(),
+                LocalDate.now(),
+                faker.name().fullName(),
+                faker.phoneNumber().phoneNumber(),
+                true);
+        CardReceive.fillCardForm(data);
+        $(Selectors.byText("Запланировать")).click();
+        $(Selectors.withText("Заказ на выбранную дату невозможен"))
+                .should(Condition.appear, Duration.ofSeconds(15));
     }
 
-    //wrong phone number
+    //Empty phone number
+    @Test
+    void emptyPhoneNumberTest() {
+        FormData data = new FormData(
+                faker.address().city(),
+                LocalDate.now().plusDays(5),
+                faker.name().fullName(),
+                "",
+                true);
+        CardReceive.fillCardForm(data);
+        $(Selectors.byText("Запланировать")).click();
+        $(Selectors.withText("Поле обязательно для заполнения"))
+                .should(Condition.appear, Duration.ofSeconds(15));
+    }
+
+    //Test with wrong phone number
     @Test
     void wrongPhoneNumberTest() {
-        $(Selectors.byAttribute("type", "text")).setValue("Москва");
-        $("[class='input__control'][type='tel']").setValue(LocalDate.now().plusDays(10).toString());
-        $("[name=\"name\"]").setValue("Иван Петров");
-        $("[name=\"phone\"]").setValue("+712");
-        $(Selectors.byClassName("checkbox__box")).click();
-        $(Selectors.byText("Забронировать")).click();
-        $(Selectors.byText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."))
+        FormData data = new FormData(
+                faker.address().city(),
+                LocalDate.now().plusDays(5),
+                faker.name().fullName(),
+                "+" + faker.phoneNumber().subscriberNumber(5),
+                true);
+        CardReceive.fillCardForm(data);
+        $(Selectors.byText("Запланировать")).click();
+        $(Selectors.withText("Поле обязательно для заполненияТелефон указан неверно. Должно быть 11 цифр, например, +79012345678."))
                 .should(Condition.appear, Duration.ofSeconds(15));
     }
 
     //checkbox unchecked
     @Test
     void checkboxError() {
-        $(Selectors.byAttribute("type", "text")).setValue("Москва");
-        $("[class='input__control'][type='tel']").setValue(LocalDate.now().plusDays(10).toString());
-        $("[name=\"name\"]").setValue("Иван Петров");
-        $("[name=\"phone\"]").setValue("+712");
-        $(Selectors.byText("Забронировать")).click();
+        FormData data = new FormData(
+                faker.address().city(),
+                LocalDate.now().plusDays(5),
+                faker.name().fullName(),
+                "+" + faker.phoneNumber().subscriberNumber(5),
+                false);
+        CardReceive.fillCardForm(data);
+        $(Selectors.byText("Запланировать")).click();
         $(Selectors.byClassName("input_invalid"))
                 .should(Condition.appear, Duration.ofSeconds(15));
     }
