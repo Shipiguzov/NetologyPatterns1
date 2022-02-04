@@ -149,6 +149,22 @@ public class SelenidTests {
                 .should(Condition.appear, Duration.ofSeconds(15));
     }
 
+    //Name in English
+    @Test
+    void englishName() {
+        Faker fakerEnglish = new Faker(new Locale("en"));
+        FormData data = new FormData(
+                faker.address().city(),
+                LocalDate.now().plusDays(5),
+                fakerEnglish.name().fullName(),
+                faker.phoneNumber().phoneNumber(),
+                true);
+        CardReceive.fillCardForm(data);
+        $(Selectors.byText("Запланировать")).click();
+        $(Selectors.withText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."))
+                .should(Condition.appear, Duration.ofSeconds(15));
+    }
+
     // City not on list
     @Test
     void cityNotFromList() {
@@ -195,6 +211,7 @@ public class SelenidTests {
     }
 
     //Test with wrong phone number
+    //NEGATIVE TEST NOT FAIL
     @Test
     void wrongPhoneNumberTest() {
         FormData data = new FormData(
