@@ -18,7 +18,6 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class SelenidTests {
 
-    static long BETWEEN_DAYS = 86_400_000;
     private Faker faker;
 
     @BeforeAll
@@ -71,6 +70,7 @@ public class SelenidTests {
 
     //All data enters like text, name consist "ё" letter
     //Test will be fail with "ё" letter
+    //POSITIVE TEST FAIL
     @Test
     void correctTestWithLetter() {
         FormData data = new FormData(

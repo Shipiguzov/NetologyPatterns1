@@ -44,7 +44,10 @@ public class CardReceive {
         $(Selectors.withText(cityName)).click();
     }
 
-    //TODO
+    /**
+     * Method change date from calendar
+     * @param day - how many day passes from choosen date
+     */
     public static void selectDayFromCalendar(long day) {
         $(Selectors.byClassName("input_type_tel")).click();
         String data = $(Selectors.byClassName("calendar__day_state_current")).getAttribute("data-day");
