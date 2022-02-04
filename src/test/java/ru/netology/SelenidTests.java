@@ -55,6 +55,35 @@ public class SelenidTests {
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
     }
 
+    //All data enters like text with double surname
+    @Test
+    void correctTestWithDoubleSurname() {
+        FormData data = new FormData(
+                faker.address().city(),
+                LocalDate.now().plusDays(5),
+                faker.name().nameWithMiddle(),
+                faker.phoneNumber().phoneNumber(),
+                true);
+        CardReceive.fillCardForm(data);
+        $(Selectors.byText("Запланировать")).click();
+        $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
+    }
+
+    //All data enters like text, name consist "ё" letter
+    //Test will be fail with "ё" letter
+    @Test
+    void correctTestWithLetter() {
+        FormData data = new FormData(
+                faker.address().city(),
+                LocalDate.now().plusDays(5),
+                faker.name().fullName() + "ё",
+                faker.phoneNumber().phoneNumber(),
+                true);
+        CardReceive.fillCardForm(data);
+        $(Selectors.byText("Запланировать")).click();
+        $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
+    }
+
     //City selects by click after enter first letter
     @Test
     void correctTestCitySelectsByClick() {
@@ -110,6 +139,21 @@ public class SelenidTests {
         Faker fakerEnglish = new Faker(new Locale("en"));
         FormData data = new FormData(
                 fakerEnglish.address().city(),
+                LocalDate.now().plusDays(5),
+                faker.name().fullName(),
+                faker.phoneNumber().phoneNumber(),
+                true);
+        CardReceive.fillCardForm(data);
+        $(Selectors.byText("Запланировать")).click();
+        $(Selectors.byText("Доставка в выбранный город недоступна"))
+                .should(Condition.appear, Duration.ofSeconds(15));
+    }
+
+    // City not on list
+    @Test
+    void cityNotFromList() {
+        FormData data = new FormData(
+                "Тольятти",
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
                 faker.phoneNumber().phoneNumber(),
