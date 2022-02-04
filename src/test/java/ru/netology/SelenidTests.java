@@ -3,15 +3,13 @@ package ru.netology;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selectors;
 import com.github.javafaker.Faker;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import ru.netology.classes.FormData;
 import ru.netology.pageObjects.CardReceive;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import static com.codeborne.selenide.Selenide.*;
@@ -51,7 +49,11 @@ public class SelenidTests {
                 true);
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
-        $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
+        $(Selectors.withText("Успешно!"))
+                .should(Condition.appear, Duration.ofSeconds(15));
+        String actualResult = $("[data-test-id=\"success-notification\"] .notification__content").getText();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.YYYY");
+        Assertions.assertTrue(actualResult.contains(data.getDate().format(formatter)));
     }
 
     //All data enters like text with double surname
@@ -95,7 +97,7 @@ public class SelenidTests {
                 true);
         CardReceive.fillCardForm(data);
         data.setCity(faker.address().city());
-        CardReceive.selectCityFromList(data.getCity().substring(0,3), data.getCity());
+        CardReceive.selectCityFromList(data.getCity().substring(0, 3), data.getCity());
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
     }
