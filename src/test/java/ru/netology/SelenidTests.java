@@ -97,7 +97,8 @@ public class SelenidTests {
                 true);
         CardReceive.fillCardForm(data);
         data.setCity(faker.address().city());
-        CardReceive.selectCityFromList(data.getCity().substring(0, 3), data.getCity());
+        int numberOfLetters = 3;
+        CardReceive.selectCityFromList(numberOfLetters, data.getCity());
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
     }

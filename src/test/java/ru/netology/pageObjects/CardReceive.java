@@ -9,6 +9,7 @@ import ru.netology.classes.FormData;
 
 
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
@@ -40,16 +41,14 @@ public class CardReceive {
     /**
      * Select city by click from droplist
      *
-     * @param firstLetters - first letters of city
      * @param cityName     - full city name
      */
-    public static void selectCityFromList(String firstLetters, String cityName) {
-        //TODO complete check cities from list
-        ElementsCollection elements = $$(Selectors.byCssSelector(".menu-item__control"));
+    public static void selectCityFromList(int numberOfLetters, String cityName) {
+        $(Selectors.byAttribute("type", "text")).setValue(cityName.substring(0, numberOfLetters));
+        ElementsCollection elements = $$(".menu-item_type_block > .menu-item__control");
         for (SelenideElement element : elements) {
-            Assertions.assertTrue(element.getText().contains(firstLetters));
+            Assertions.assertTrue(element.getText().toLowerCase(Locale.ROOT).contains(cityName.substring(0, numberOfLetters).toLowerCase()));
         }
-        $(Selectors.byAttribute("type", "text")).setValue(firstLetters);
         $(Selectors.withText(cityName)).click();
     }
 
