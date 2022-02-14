@@ -4,6 +4,7 @@ import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selectors;
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.*;
+import ru.netology.classes.DataGenerator;
 import ru.netology.classes.FormData;
 import ru.netology.pageObjects.CardReceive;
 
@@ -16,8 +17,6 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class SelenidTests {
 
-    private Faker faker;
-
     @BeforeAll
     static void setupAll() {
     }
@@ -28,7 +27,6 @@ public class SelenidTests {
         options.addArguments("--disable-dev-shm-usage");
         options.addArguments("--no-sandbox");
         options.addArguments("--headless");*/
-        faker = new Faker(new Locale("ru"));
         open("http://localhost:9999/");
     }
 
@@ -41,33 +39,22 @@ public class SelenidTests {
     //All data enters like text
     @Test
     void correctTest() {
-        FormData data = new FormData(
-                faker.address().city(),
-                LocalDate.now().plusDays(5),
-                faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+        FormData data = DataGenerator.fillAllFieldCorrectly();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Успешно!"))
                 .should(Condition.appear, Duration.ofSeconds(15));
-        String actualResult = $("[data-test-id=\"success-notification\"] .notification__content").getText();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.YYYY");
-        Assertions.assertTrue(actualResult.contains(data.getDate().format(formatter)));
+        CardReceive.checkPopupWindow(data.getDate());
     }
 
     //All data enters like text with double surname
     @Test
     void correctTestWithDoubleSurname() {
-        FormData data = new FormData(
-                faker.address().city(),
-                LocalDate.now().plusDays(5),
-                faker.name().nameWithMiddle(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+        FormData data = DataGenerator.fillAllFieldCorrectlyWithDoubleSurname();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
+        CardReceive.checkPopupWindow(data.getDate());
     }
 
     //All data enters like text, name consist "ё" letter
@@ -75,77 +62,58 @@ public class SelenidTests {
     //POSITIVE TEST FAIL
     @Test
     void correctTestWithLetter() {
-        FormData data = new FormData(
-                faker.address().city(),
-                LocalDate.now().plusDays(5),
-                faker.name().fullName() + "ё",
-                faker.phoneNumber().phoneNumber(),
-                true);
+        FormData data = DataGenerator.fillAllFieldCorrectlyWithLetter();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
+        CardReceive.checkPopupWindow(data.getDate());
     }
 
     //City selects by click after enter first letter
     @Test
     void correctTestCitySelectsByClick() {
-        FormData data = new FormData(
-                "",
-                LocalDate.now().plusDays(5),
-                faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+        FormData data = DataGenerator.emptyCity();
         CardReceive.fillCardForm(data);
+        Faker faker = new Faker(new Locale("ru"));
         data.setCity(faker.address().city());
         int numberOfLetters = 3;
         CardReceive.selectCityFromList(numberOfLetters, data.getCity());
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
+        CardReceive.checkPopupWindow(data.getDate());
     }
 
     //Data selects from calendar
     @Test
     void dateFromCalendar() {
-        FormData data = new FormData(
-                faker.address().city(),
-                LocalDate.now().plusDays(7),
-                faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+        FormData data = DataGenerator.fillAllFieldCorrectly();
         CardReceive.fillCardForm(data);
         CardReceive.selectDayFromCalendar(7);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
+        CardReceive.checkPopupWindow(data.getDate());
     }
 
     //Test with replace delivery
     @Test
     void testWithSameDate() {
-        FormData data = new FormData(
-                faker.address().city(),
-                LocalDate.now().plusDays(7),
-                faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+        int daysPlus = 5;
+        FormData data = DataGenerator.fillAllFieldCorrectly();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
-        CardReceive.selectDayFromCalendar(5);
+        CardReceive.checkPopupWindow(data.getDate());;
+        CardReceive.selectDayFromCalendar(daysPlus);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.byText("Перепланировать")).click();
         $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
+        CardReceive.checkPopupWindow(data.getDate().plusDays(daysPlus));
     }
 
     //Negative tests
     //City name in English
     @Test
     void incorrectCity() {
-        Faker fakerEnglish = new Faker(new Locale("en"));
-        FormData data = new FormData(
-                fakerEnglish.address().city(),
-                LocalDate.now().plusDays(5),
-                faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+        FormData data = DataGenerator.fillCityInEnglish();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.byText("Доставка в выбранный город недоступна"))
@@ -155,13 +123,7 @@ public class SelenidTests {
     //Name in English
     @Test
     void englishName() {
-        Faker fakerEnglish = new Faker(new Locale("en"));
-        FormData data = new FormData(
-                faker.address().city(),
-                LocalDate.now().plusDays(5),
-                fakerEnglish.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+        FormData data = DataGenerator.fillNameInEnglish();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."))
@@ -171,12 +133,7 @@ public class SelenidTests {
     // City not on list
     @Test
     void cityNotFromList() {
-        FormData data = new FormData(
-                "Тольятти",
-                LocalDate.now().plusDays(5),
-                faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+        FormData data = DataGenerator.cityNotInList();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.byText("Доставка в выбранный город недоступна"))
@@ -186,12 +143,7 @@ public class SelenidTests {
     //Entered wrong data
     @Test
     void wrongDate() {
-        FormData data = new FormData(
-                faker.address().city(),
-                LocalDate.now(),
-                faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+        FormData data = DataGenerator.wrongDate();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Заказ на выбранную дату невозможен"))
@@ -201,12 +153,7 @@ public class SelenidTests {
     //Empty phone number
     @Test
     void emptyPhoneNumberTest() {
-        FormData data = new FormData(
-                faker.address().city(),
-                LocalDate.now().plusDays(5),
-                faker.name().fullName(),
-                "",
-                true);
+        FormData data = DataGenerator.emptyPhoneNumber();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Поле обязательно для заполнения"))
@@ -217,12 +164,7 @@ public class SelenidTests {
     //NEGATIVE TEST NOT FAIL
     @Test
     void wrongPhoneNumberTest() {
-        FormData data = new FormData(
-                faker.address().city(),
-                LocalDate.now().plusDays(5),
-                faker.name().fullName(),
-                "+" + faker.phoneNumber().subscriberNumber(5),
-                true);
+        FormData data = DataGenerator.wrongPhoneNumber();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.withText("Поле обязательно для заполненияТелефон указан неверно. Должно быть 11 цифр, например, +79012345678."))
@@ -232,12 +174,7 @@ public class SelenidTests {
     //checkbox unchecked
     @Test
     void checkboxError() {
-        FormData data = new FormData(
-                faker.address().city(),
-                LocalDate.now().plusDays(5),
-                faker.name().fullName(),
-                "+" + faker.phoneNumber().subscriberNumber(5),
-                false);
+        FormData data = DataGenerator.uncheckedCheckBox();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.byClassName("input_invalid"))

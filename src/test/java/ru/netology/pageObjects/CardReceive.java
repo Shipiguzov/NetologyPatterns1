@@ -8,7 +8,9 @@ import org.openqa.selenium.Keys;
 import ru.netology.classes.FormData;
 
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Formatter;
 import java.util.Locale;
 
 import static com.codeborne.selenide.Selenide.$;
@@ -63,4 +65,9 @@ public class CardReceive {
         $(Selectors.byAttribute("data-day", String.valueOf(newDate))).click();
     }
 
+    public static void checkPopupWindow(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.YYYY");
+        String actualResult = $(".notification__content").getText();
+        Assertions.assertTrue(actualResult.contains(date.format(formatter)));
+    }
 }

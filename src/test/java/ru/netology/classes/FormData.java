@@ -8,10 +8,10 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 public class FormData {
-    String city;
-    LocalDate date;
-    String fullName;
-    String phone;
-    Boolean checkbox;
+    private String city;
+    private LocalDate date;
+    private String fullName;
+    private String phone;
+    private Boolean checkbox;
 
 }
