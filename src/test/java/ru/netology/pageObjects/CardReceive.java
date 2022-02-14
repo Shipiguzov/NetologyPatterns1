@@ -1,5 +1,6 @@
 package ru.netology.pageObjects;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
@@ -8,6 +9,7 @@ import org.openqa.selenium.Keys;
 import ru.netology.classes.FormData;
 
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Formatter;
@@ -66,6 +68,8 @@ public class CardReceive {
     }
 
     public static void checkPopupWindow(LocalDate date){
+        $(Selectors.withText("Успешно!"))
+                .should(Condition.appear, Duration.ofSeconds(15));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.YYYY");
         String actualResult = $(".notification__content").getText();
         Assertions.assertTrue(actualResult.contains(date.format(formatter)));

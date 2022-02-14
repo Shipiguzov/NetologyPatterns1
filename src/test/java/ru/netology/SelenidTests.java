@@ -42,8 +42,6 @@ public class SelenidTests {
         FormData data = DataGenerator.fillAllFieldCorrectly();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
-        $(Selectors.withText("Успешно!"))
-                .should(Condition.appear, Duration.ofSeconds(15));
         CardReceive.checkPopupWindow(data.getDate());
     }
 
@@ -53,7 +51,6 @@ public class SelenidTests {
         FormData data = DataGenerator.fillAllFieldCorrectlyWithDoubleSurname();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
-        $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
         CardReceive.checkPopupWindow(data.getDate());
     }
 
@@ -65,7 +62,6 @@ public class SelenidTests {
         FormData data = DataGenerator.fillAllFieldCorrectlyWithLetter();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
-        $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
         CardReceive.checkPopupWindow(data.getDate());
     }
 
@@ -79,7 +75,6 @@ public class SelenidTests {
         int numberOfLetters = 3;
         CardReceive.selectCityFromList(numberOfLetters, data.getCity());
         $(Selectors.byText("Запланировать")).click();
-        $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
         CardReceive.checkPopupWindow(data.getDate());
     }
 
@@ -105,7 +100,6 @@ public class SelenidTests {
         CardReceive.selectDayFromCalendar(daysPlus);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.byText("Перепланировать")).click();
-        $(Selectors.withText("Успешно!")).should(Condition.appear, Duration.ofSeconds(15));
         CardReceive.checkPopupWindow(data.getDate().plusDays(daysPlus));
     }
 
