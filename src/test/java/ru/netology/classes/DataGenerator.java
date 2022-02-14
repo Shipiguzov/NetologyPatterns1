@@ -10,9 +10,18 @@ public class DataGenerator {
 
     private static Faker faker = new Faker(new Locale("ru"));
 
+    public static int randomNumber(int minRange, int maxRange) {
+        return (int) (Math.random() * (maxRange - minRange + 1)) + minRange;
+    }
+
+    private static String getCityFromList(){
+        int number = randomNumber(0, 9);
+        return Cities.values()[number].getCityname();
+    }
+
     public static FormData fillAllFieldCorrectly() {
         return new FormData(
-                faker.address().city(),
+                getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
                 faker.phoneNumber().phoneNumber(),
@@ -21,7 +30,7 @@ public class DataGenerator {
 
     public static FormData fillAllFieldCorrectlyWithDoubleSurname() {
         return new FormData(
-                faker.address().city(),
+                getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().nameWithMiddle(),
                 faker.phoneNumber().phoneNumber(),
@@ -30,7 +39,7 @@ public class DataGenerator {
 
     public static FormData fillAllFieldCorrectlyWithLetter() {
         return new FormData(
-                faker.address().city(),
+                getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().fullName() + "ё",
                 faker.phoneNumber().phoneNumber(),
@@ -59,7 +68,7 @@ public class DataGenerator {
     public static FormData fillNameInEnglish(){
         Faker fakerEnglish = new Faker(new Locale("en"));
         return new FormData(
-                faker.address().city(),
+                getCityFromList(),
                 LocalDate.now().plusDays(5),
                 fakerEnglish.name().fullName(),
                 faker.phoneNumber().phoneNumber(),
@@ -77,7 +86,7 @@ public class DataGenerator {
 
     public static FormData wrongDate(){
         return new FormData(
-                faker.address().city(),
+                getCityFromList(),
                 LocalDate.now(),
                 faker.name().fullName(),
                 faker.phoneNumber().phoneNumber(),
@@ -86,7 +95,7 @@ public class DataGenerator {
 
     public static FormData emptyPhoneNumber(){
         return new FormData(
-                faker.address().city(),
+                getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
                 "",
@@ -95,7 +104,7 @@ public class DataGenerator {
 
     public static FormData wrongPhoneNumber(){
         return new FormData(
-                faker.address().city(),
+                getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
                 "+" + faker.phoneNumber().subscriberNumber(5),
@@ -104,7 +113,7 @@ public class DataGenerator {
 
     public static FormData uncheckedCheckBox(){
         return new FormData(
-                faker.address().city(),
+                getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
                 "+" + faker.phoneNumber().subscriberNumber(5),
