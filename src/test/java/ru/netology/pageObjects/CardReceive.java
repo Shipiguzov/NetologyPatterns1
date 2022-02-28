@@ -67,6 +67,11 @@ public class CardReceive {
         $(Selectors.byAttribute("data-day", String.valueOf(newDate))).click();
     }
 
+    public String getRandomCity(){
+        int number = (int) (Math.random() * cities.length();
+        return cities[number];
+    }
+
     public static void checkPopupWindow(LocalDate date){
         $(Selectors.withText("Успешно!"))
                 .should(Condition.appear, Duration.ofSeconds(15));

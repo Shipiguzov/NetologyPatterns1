@@ -29,12 +29,15 @@ public class DataGenerator {
     }
 
     public static FormData fillAllFieldCorrectlyWithDoubleSurname() {
-        return new FormData(
+        /*return new FormData(
                 getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().nameWithMiddle(),
                 faker.phoneNumber().phoneNumber(),
-                true);
+                true);*/
+        FormData data = fillAllFieldCorrectly();
+        data.setFullName(faker.name().nameWithMiddle());
+        return data;
     }
 
     public static FormData fillAllFieldCorrectlyWithLetter() {
