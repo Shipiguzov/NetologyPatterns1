@@ -6,6 +6,7 @@ import com.codeborne.selenide.Selectors;
 import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.Keys;
+import ru.netology.classes.Cities;
 import ru.netology.classes.FormData;
 
 
@@ -37,15 +38,24 @@ public class CardReceive {
         $("[class='input__control'][type='tel']").append(data.getDate().format(formatter)).pressEnter();
         $("[name=\"name\"]").setValue(data.getFullName());
         $("[name=\"phone\"]").setValue(data.getPhone());
-        if (data.getCheckbox())
-            $(Selectors.byClassName("checkbox__box")).click();
+        $(Selectors.byClassName("checkbox__box")).click();
+        $(Selectors.byText("Запланировать")).click();
+    }
+
+    public static void fillCardFormWithUnckeckedChekbox(FormData data) {
+        $(Selectors.byAttribute("type", "text")).setValue(data.getCity());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.YYYY");
+        $("[class='input__control'][type='tel']").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[class='input__control'][type='tel']").append(data.getDate().format(formatter)).pressEnter();
+        $("[name=\"name\"]").setValue(data.getFullName());
+        $("[name=\"phone\"]").setValue(data.getPhone());
         $(Selectors.byText("Запланировать")).click();
     }
 
     /**
      * Select city by click from droplist
      *
-     * @param cityName     - full city name
+     * @param cityName - full city name
      */
     public static void selectCityFromList(int numberOfLetters, String cityName) {
         $(Selectors.byAttribute("type", "text")).setValue(cityName.substring(0, numberOfLetters));
@@ -58,6 +68,7 @@ public class CardReceive {
 
     /**
      * Method change date from calendar
+     *
      * @param day - how many day passes from choosen date
      */
     public static void selectDayFromCalendar(long day) {
@@ -67,16 +78,20 @@ public class CardReceive {
         $(Selectors.byAttribute("data-day", String.valueOf(newDate))).click();
     }
 
-    public String getRandomCity(){
-        int number = (int) (Math.random() * cities.length();
-        return cities[number];
+    public String getRandomCity() {
+        int number = (int) (Math.random() * Cities.values().length);
+        return Cities.values()[number].getCityname();
     }
 
-    public static void checkPopupWindow(LocalDate date){
+    public static void checkPopupWindow(LocalDate date) {
         $(Selectors.withText("Успешно!"))
                 .should(Condition.appear, Duration.ofSeconds(15));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.YYYY");
         String actualResult = $(".notification__content").getText();
         Assertions.assertTrue(actualResult.contains(date.format(formatter)));
+    }
+
+    public static void clickButton() {
+        $(Selectors.byText("Запланировать")).click();
     }
 }

@@ -19,25 +19,20 @@ public class DataGenerator {
         return Cities.values()[number].getCityname();
     }
 
-    public static FormData fillAllFieldCorrectly() {
+    public static FormData correctDataForForm() {
         return new FormData(
                 getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+                faker.phoneNumber().phoneNumber());
     }
 
     public static FormData fillAllFieldCorrectlyWithDoubleSurname() {
-        /*return new FormData(
+        return new FormData(
                 getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().nameWithMiddle(),
-                faker.phoneNumber().phoneNumber(),
-                true);*/
-        FormData data = fillAllFieldCorrectly();
-        data.setFullName(faker.name().nameWithMiddle());
-        return data;
+                faker.phoneNumber().phoneNumber());
     }
 
     public static FormData fillAllFieldCorrectlyWithLetter() {
@@ -45,8 +40,7 @@ public class DataGenerator {
                 getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().fullName() + "ё",
-                faker.phoneNumber().phoneNumber(),
-                true);
+                faker.phoneNumber().phoneNumber());
     }
 
     public static FormData emptyCity() {
@@ -54,8 +48,7 @@ public class DataGenerator {
                 "",
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+                faker.phoneNumber().phoneNumber());
     }
 
     public static FormData fillCityInEnglish(){
@@ -64,8 +57,7 @@ public class DataGenerator {
                 fakerEnglish.address().city(),
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+                faker.phoneNumber().phoneNumber());
     }
 
     public static FormData fillNameInEnglish(){
@@ -74,8 +66,7 @@ public class DataGenerator {
                 getCityFromList(),
                 LocalDate.now().plusDays(5),
                 fakerEnglish.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+                faker.phoneNumber().phoneNumber());
     }
 
     public static FormData cityNotInList(){
@@ -83,8 +74,7 @@ public class DataGenerator {
                 "Тольятти",
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+                faker.phoneNumber().phoneNumber());
     }
 
     public static FormData wrongDate(){
@@ -92,8 +82,7 @@ public class DataGenerator {
                 getCityFromList(),
                 LocalDate.now(),
                 faker.name().fullName(),
-                faker.phoneNumber().phoneNumber(),
-                true);
+                faker.phoneNumber().phoneNumber());
     }
 
     public static FormData emptyPhoneNumber(){
@@ -101,8 +90,7 @@ public class DataGenerator {
                 getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
-                "",
-                true);
+                "");
     }
 
     public static FormData wrongPhoneNumber(){
@@ -110,16 +98,6 @@ public class DataGenerator {
                 getCityFromList(),
                 LocalDate.now().plusDays(5),
                 faker.name().fullName(),
-                "+" + faker.phoneNumber().subscriberNumber(5),
-                true);
-    }
-
-    public static FormData uncheckedCheckBox(){
-        return new FormData(
-                getCityFromList(),
-                LocalDate.now().plusDays(5),
-                faker.name().fullName(),
-                "+" + faker.phoneNumber().subscriberNumber(5),
-                false);
+                "+" + faker.phoneNumber().subscriberNumber(5));
     }
 }

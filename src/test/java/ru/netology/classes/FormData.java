@@ -2,16 +2,14 @@ package ru.netology.classes;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Value;
 
 import java.time.LocalDate;
 
-@Data
-@AllArgsConstructor
+@Value
 public class FormData {
-    private String city;
-    private LocalDate date;
-    private String fullName;
-    private String phone;
-    private Boolean checkbox;
-
+    String city;
+    LocalDate date;
+    String fullName;
+    String phone;
 }

@@ -2,16 +2,12 @@ package ru.netology;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selectors;
-import com.github.javafaker.Faker;
 import org.junit.jupiter.api.*;
 import ru.netology.classes.DataGenerator;
 import ru.netology.classes.FormData;
 import ru.netology.pageObjects.CardReceive;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import static com.codeborne.selenide.Selenide.*;
 
@@ -39,9 +35,9 @@ public class SelenidTests {
     //All data enters like text
     @Test
     void correctTest() {
-        FormData data = DataGenerator.fillAllFieldCorrectly();
+        FormData data = DataGenerator.correctDataForForm();
         CardReceive.fillCardForm(data);
-        $(Selectors.byText("Запланировать")).click();
+        CardReceive.clickButton();
         CardReceive.checkPopupWindow(data.getDate());
     }
 
@@ -66,22 +62,23 @@ public class SelenidTests {
     }
 
     //City selects by click after enter first letter
-    @Test
-    void correctTestCitySelectsByClick() {
-        FormData data = DataGenerator.emptyCity();
-        CardReceive.fillCardForm(data);
-        Faker faker = new Faker(new Locale("ru"));
-        data.setCity(faker.address().city());
-        int numberOfLetters = 3;
-        CardReceive.selectCityFromList(numberOfLetters, data.getCity());
-        $(Selectors.byText("Запланировать")).click();
-        CardReceive.checkPopupWindow(data.getDate());
-    }
+//    @Test
+//    void correctTestCitySelectsByClick() {
+//        FormData data = DataGenerator.emptyCity();
+//        CardReceive.fillCardForm(data);
+//        Faker faker = new Faker(new Locale("ru"));
+//        data.setCity(faker.address().city());
+//        int numberOfLetters = 3;
+//        CardReceive.selectCityFromList(numberOfLetters, data.getCity());
+//        $(Selectors.byText("Запланировать")).click();
+//        CardReceive.checkPopupWindow(data.getDate());
+//    }
 
+    //FIXME
     //Data selects from calendar
     @Test
     void dateFromCalendar() {
-        FormData data = DataGenerator.fillAllFieldCorrectly();
+        FormData data = DataGenerator.correctDataForForm();
         CardReceive.fillCardForm(data);
         CardReceive.selectDayFromCalendar(7);
         $(Selectors.byText("Запланировать")).click();
@@ -93,7 +90,7 @@ public class SelenidTests {
     @Test
     void testWithSameDate() {
         int daysPlus = 5;
-        FormData data = DataGenerator.fillAllFieldCorrectly();
+        FormData data = DataGenerator.correctDataForForm();
         CardReceive.fillCardForm(data);
         $(Selectors.byText("Запланировать")).click();
         CardReceive.checkPopupWindow(data.getDate());;
@@ -168,8 +165,8 @@ public class SelenidTests {
     //checkbox unchecked
     @Test
     void checkboxError() {
-        FormData data = DataGenerator.uncheckedCheckBox();
-        CardReceive.fillCardForm(data);
+        FormData data = DataGenerator.correctDataForForm();
+        CardReceive.fillCardFormWithUnckeckedChekbox(data);
         $(Selectors.byText("Запланировать")).click();
         $(Selectors.byClassName("input_invalid"))
                 .should(Condition.appear, Duration.ofSeconds(15));
